@@ -1,4 +1,4 @@
-#version 0.01 - 6/20/2023
+#version 0.02 - 6/20/2023
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -10,29 +10,31 @@ from tkinter import scrolledtext, END, messagebox
 from tkinter.scrolledtext import *
 from datetime import datetime
 from time import sleep
+import math
 playername = ''
 rank = ''
 KD = 0
 HS = 0
 KAST = 0
 
-def checkConditions(HS, KD, time):
+def checkConditions(time):
     H = float(HS.replace('%', ''))
     K = float(KD.replace('%', ''))
+    KASTthing = float(KAST.replace('%', ''))
     hours = float(time)
     E = H / K
-    X = 26
+    Z = E * KASTthing
 
     conditions = {
-        (H < X and E > H): action1,
-    (H < X and E < H): action2,
-    (H < X and E == H): action2,
-    (H == X and E == H): action3,
-    (H == X and E < H): action3,
-    (H == X and E > H): action3,
-    (H > X and E < H): action3,
-    (H > X and E > H): action3,
-    (H > X and E == H): action4
+        (Z > E * 0.73, E > H): action1,
+    (Z < E * 0.73, E < H): action2,
+    (Z > E * 0.73, E == H): action2,
+    (Z < E * 0.73, E == H): action2,
+    (Z > E * 0.73, E < H): action3,
+    (Z < E * 0.73, E > H): action3,
+    (Z == E * 0.73, E == H): action3,
+    (Z == E * 0.73, E > H): action4,
+    (Z == E * 0.73, E < H): action5,
     }
     matching_condition = next((cond for cond, action in conditions.items() if cond), None)
     if matching_condition:
@@ -42,77 +44,95 @@ def checkConditions(HS, KD, time):
 
 def action1(hours):
 
-    vodreviewTime = hours*0.15
-    aimtrainTime = hours*0.25
     deathmatches = int((hours*0.3*60)//10)
-    compmatches = int((hours*0.3*60)//35)
+    compmatches = int((hours*0.3*60)//45)
+    vodReviewTime = compmatches/2
+    aimtime = hours - (compmatches*45 + deathmatches*10 + math.ceil(vodReviewTime) * 45)/60
 
-    if round(vodreviewTime, 2) % 1 == 0 and vodreviewTime > 0:
-        vodLabel.insert(tk.END, f'{round(vodreviewTime)} Hours')
+    if round(vodReviewTime, 2) % 1 == 0 and vodReviewTime >= 1:
+        vodLabel.insert(tk.END, f'{round(vodReviewTime)} Match(s)')
     else:
-        vodLabel.insert(tk.END, f'{round(vodreviewTime)} Hours and {round((vodreviewTime % 1)*60)} minutes')
+        vodLabel.insert(tk.END, '1 Match')
 
-    if round(aimtrainTime, 2) % 1 == 0 and aimtrainTime > 0:
-        aimtrainLabel.insert(tk.END, f'{round(aimtrainTime)} Hours')
+    if round(aimtime, 2) % 1 == 0 and aimtime > 0:
+        aimtrainLabel.insert(tk.END, f'{round(aimtime)} Hour(s)')
     else:
-        aimtrainLabel.insert(tk.END, f'{round(aimtrainTime)} Hours and {round((aimtrainTime % 1)*60)} minutes')
+        aimtrainLabel.insert(tk.END, f'{round(aimtime)} Hours and {round((aimtime % 1)*60)} minutes')
     deathmatchLabel.insert(tk.END, f'{deathmatches} Deathmatches')
     compmatchesLabel.insert(tk.END, f'{compmatches} competitive matches')
 
 def action2(hours):
-    
-    vodreviewTime = hours*0.1
-    aimtrainTime = hours*0.3
-    deathmatches = int((hours*0.2*60)//10)
-    compmatches = int((hours*0.4*60)//35)
+    deathmatches = int((hours*0.15*60)//10)
+    compmatches = int((hours*0.45*60)//45)
+    vodReviewTime = compmatches/2
+    aimtime = hours - (compmatches*45 + deathmatches*10 + math.ceil(vodReviewTime) * 45)/60
 
-    if round(vodreviewTime, 2) % 1 == 0 and vodreviewTime > 0:
-        vodLabel.insert(tk.END, f'{round(vodreviewTime)} Hours')
+    if round(vodReviewTime, 2) % 1 == 0 and vodReviewTime >= 1:
+        vodLabel.insert(tk.END, f'{round(vodReviewTime)} Match(s)')
     else:
-        vodLabel.insert(tk.END, f'{round(vodreviewTime)} Hours and {round((vodreviewTime % 1)*60)} minutes')
+        vodLabel.insert(tk.END, '1 Match')
 
-    if round(aimtrainTime, 2) % 1 == 0 and aimtrainTime > 0:
-        aimtrainLabel.insert(tk.END, f'{round(aimtrainTime)} Hours')
+    if round(aimtime, 2) % 1 == 0 and aimtime > 0:
+        aimtrainLabel.insert(tk.END, f'{round(aimtime)} Hour(s)')
     else:
-        aimtrainLabel.insert(tk.END, f'{round(aimtrainTime)} Hours and {round((aimtrainTime % 1)*60)} minutes')
+        aimtrainLabel.insert(tk.END, f'{round(aimtime)} Hours and {round((aimtime % 1)*60)} minutes')
     deathmatchLabel.insert(tk.END, f'{deathmatches} Deathmatches')
     compmatchesLabel.insert(tk.END, f'{compmatches} competitive matches')
 
 def action3(hours):
 
-    vodreviewTime=hours*0.20
-    aimtrainTime=hours*0.20
-    deathmatches = int((hours*0.3*20)//10)
-    compmatches = int((hours*0.3*40)//35)
+    deathmatches = int((hours*0.2*60)//10)
+    compmatches = int((hours*0.4*60)//45)
+    vodReviewTime = compmatches/2
+    aimtime = hours - (compmatches*45 + deathmatches*10 + math.ceil(vodReviewTime) * 45)/60
 
-    if round(vodreviewTime, 2) % 1 == 0 and vodreviewTime > 0:
-        vodLabel.insert(tk.END, f'{round(vodreviewTime)} Hours')
+    if round(vodReviewTime, 2) % 1 == 0 and vodReviewTime >= 1:
+        vodLabel.insert(tk.END, f'{round(vodReviewTime)} Match(s)')
     else:
-        vodLabel.insert(tk.END, f'{round(vodreviewTime)} Hours and {round((vodreviewTime % 1)*60)} minutes')
+        vodLabel.insert(tk.END, '1 Match')
 
-    if round(aimtrainTime, 2) % 1 == 0 and aimtrainTime > 0:
-        aimtrainLabel.insert(tk.END, f'{round(aimtrainTime)} Hours')
+    if round(aimtime, 2) % 1 == 0 and aimtime > 0:
+        aimtrainLabel.insert(tk.END, f'{round(aimtime)} Hour(s)')
     else:
-        aimtrainLabel.insert(tk.END, f'{round(aimtrainTime)} Hours and {round((aimtrainTime % 1)*60)} minutes')
+        aimtrainLabel.insert(tk.END, f'{round(aimtime)} Hours and {round((aimtime % 1)*60)} minutes')
     deathmatchLabel.insert(tk.END, f'{deathmatches} Deathmatches')
     compmatchesLabel.insert(tk.END, f'{compmatches} competitive matches')
 
 def action4(hours):
 
-    vodreviewTime=hours*0.30
-    aimtrainTime=hours*0.10
     deathmatches = int((hours*0.35*60)//10)
-    compmatches = int((hours*0.25*60)//35)
+    compmatches = int((hours*0.25*60)//45)
+    vodReviewTime = compmatches/2
+    aimtime = hours - (compmatches*45 + deathmatches*10 + math.ceil(vodReviewTime) * 45)/60
 
-    if round(vodreviewTime, 2) % 1 == 0 and vodreviewTime > 0:
-        vodLabel.insert(tk.END, f'{round(vodreviewTime)} Hours')
+    if round(vodReviewTime, 2) % 1 == 0 and vodReviewTime >= 1:
+        vodLabel.insert(tk.END, f'{round(vodReviewTime)} Match(s)')
     else:
-        vodLabel.insert(tk.END, f'{round(vodreviewTime)} Hours and {round((vodreviewTime % 1)*60)} minutes')
+        vodLabel.insert(tk.END, '1 Match')
 
-    if round(aimtrainTime, 2) % 1 == 0 and aimtrainTime > 0:
-        aimtrainLabel.insert(tk.END, f'{round(aimtrainTime)} Hours')
+    if round(aimtime, 2) % 1 == 0 and aimtime > 0:
+        aimtrainLabel.insert(tk.END, f'{round(aimtime)} Hour(s)')
     else:
-        aimtrainLabel.insert(tk.END, f'{round(aimtrainTime)} Hours and {round((aimtrainTime % 1)*60)} minutes')
+        aimtrainLabel.insert(tk.END, f'{round(aimtime)} Hours and {round((aimtime % 1)*60)} minutes')
+    deathmatchLabel.insert(tk.END, f'{deathmatches} Deathmatches')
+    compmatchesLabel.insert(tk.END, f'{compmatches} competitive matches')
+
+def action5(hours):
+
+    deathmatches = int((hours*0.25*60)//10)
+    compmatches = int((hours*0.35*60)//45)
+    vodReviewTime = compmatches/2
+    aimtime = hours - (compmatches*45 + deathmatches*10 + math.ceil(vodReviewTime) * 45)/60
+
+    if round(vodReviewTime, 2) % 1 == 0 and vodReviewTime >= 1:
+        vodLabel.insert(tk.END, f'{round(vodReviewTime)} Match(s)')
+    else:
+        vodLabel.insert(tk.END, '1 Match')
+
+    if round(aimtime, 2) % 1 == 0 and aimtime > 0:
+        aimtrainLabel.insert(tk.END, f'{round(aimtime)} Hour(s)')
+    else:
+        aimtrainLabel.insert(tk.END, f'{round(aimtime)} Hours and {round((aimtime % 1)*60)} minutes')
     deathmatchLabel.insert(tk.END, f'{deathmatches} Deathmatches')
     compmatchesLabel.insert(tk.END, f'{compmatches} competitive matches')
 
@@ -143,7 +163,7 @@ def grabInfo(riot, time):
     headshotLabel.insert(tk.END, HS)
     kastLabel.insert(tk.END, KAST)
 
-    checkConditions(HS, KD, time)
+    checkConditions(time)
 
     root.update()
 
